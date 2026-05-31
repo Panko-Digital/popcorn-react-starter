@@ -177,15 +177,12 @@ export const extractPageListContent = (
     const block = pageData.blocks.find((b) => b.ref === blockRef);
     if (!block) return [];
 
+    const isListLike = (el: CMSElement) =>
+        el.type === 'list' || el.type === 'list-reference' || el.type === 'collection';
+
     const listElement = elementRef
-        ? block.elements.find(
-            (el) =>
-                (el.type === 'list' || el.type === 'list-reference') &&
-                el.ref === elementRef,
-        )
-        : block.elements.find(
-            (el) => el.type === 'list' || el.type === 'list-reference',
-        );
+        ? block.elements.find((el) => isListLike(el) && el.ref === elementRef)
+        : block.elements.find(isListLike);
 
     if (listElement?.list?.items && listElement.list.items.length > 0) {
         return [...listElement.list.items].sort(
