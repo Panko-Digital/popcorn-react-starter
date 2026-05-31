@@ -27,6 +27,8 @@ export interface CMSElement {
     order: number;
     content: string;
     mediaUrl?: string;
+    /** Parsed JSON config stored on the element (e.g. { display, columns, overlayOpacity }) */
+    config?: Record<string, any>;
     list?: {
         id: string;
         items: CMSListItem[];
@@ -52,6 +54,10 @@ export interface CMSPage {
     title: string;
     description: string | null;
     publishedAt: string;
+    /** True when this page is a full-screen splash/landing screen */
+    isSplash?: boolean;
+    /** Page-level config JSON (e.g. { splashMode, enterTo, enterLabel }) */
+    config?: Record<string, any> | null;
     blocks: CMSBlock[];
 }
 
