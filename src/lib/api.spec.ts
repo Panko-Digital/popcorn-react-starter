@@ -267,3 +267,83 @@ describe('extractPageContent — regression', () => {
         expect(content['page-body']).toMatchObject({ type: 'text', value: 'Some body text' });
     });
 });
+
+// ─── Splash page — CMSPage.isSplash / CMSElement.config ──────────────────────
+
+describe('CMSPage and CMSElement — splash page fields', () => {
+    it('CMSPage accepts isSplash: true and a config object', () => {
+        const page: CMSPage = {
+            ...makePage([]),
+            isSplash: true,
+            config: { splashMode: 'scroll-through', enterTo: '/home', enterLabel: 'Enter' },
+        };
+        expect(page.isSplash).toBe(true);
+        expect(page.config?.splashMode).toBe('scroll-through');
+        expect(page.config?.enterLabel).toBe('Enter');
+    });
+
+    it('isSplash is undefined when not set (optional field)', () => {
+        const page = makePage([]);
+        expect(page.isSplash).toBeUndefined();
+        expect(page.config).toBeUndefined();
+    });
+
+    it('CMSElement accepts a config object (e.g. overlayOpacity for video-background)', () => {
+        const el: CMSElement = {
+            id: 'el-vb',
+            type: 'video-background',
+            ref: 'splash-bg',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://cdn.example.com/hero.mp4',
+            config: { overlayOpacity: 0.45 },
+        };
+        expect(el.type).toBe('video-background');
+        expect(el.config?.overlayOpacity).toBe(0.45);
+        expect(el.mediaUrl).toBe('https://cdn.example.com/hero.mp4');
+    });
+
+    it('extractPageContent returns mediaUrl for a video-background element', () => {
+        const el: CMSElement = {
+            id: 'el-vb',
+            type: 'video-background',
+            ref: 'splash-bg',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://cdn.example.com/hero.mp4',
+            config: { overlayOpacity: 0.45 },
+        };
+        const page = makePage([el]);
+        const content = extractPageContent(page, 'hero');
+        expect(content['splash-bg']).toMatchObject({
+            type: 'video-background',
+            value: '',
+            mediaUrl: 'https://cdn.example.com/hero.mp4',
+        });
+    });
+
+    it('extractPageContent still works normally on a page with isSplash: true', () => {
+        const page: CMSPage = {
+            id: 'page-splash',
+            slug: 'splash',
+            title: 'Splash',
+            description: null,
+            publishedAt: '2024-01-01T00:00:00.000Z',
+            isSplash: true,
+            config: { splashMode: 'enter-button', enterTo: '/home', enterLabel: 'Enter Site' },
+            blocks: [
+                {
+                    id: 'area-overlay',
+                    ref: 'splash-overlay',
+                    name: 'Overlay',
+                    order: 0,
+                    elements: [
+                        { id: 'el-1', type: 'heading', ref: 'splash-title', order: 0, content: 'Welcome' },
+                    ],
+                },
+            ],
+        };
+        const content = extractPageContent(page, 'splash-overlay');
+        expect(content['splash-title']).toMatchObject({ type: 'heading', value: 'Welcome' });
+    });
+});
