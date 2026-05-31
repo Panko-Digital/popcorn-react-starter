@@ -30,8 +30,12 @@ export function Slideshow({
   heightClass = "h-[480px]",
   className = "",
 }: SlideshowProps) {
-  const autoplay = useRef(Autoplay({ delay: autoplayDelay, stopOnInteraction: true }));
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [autoplay.current]);
+  const autoplay = useRef(
+    Autoplay({ delay: autoplayDelay, stopOnInteraction: true }),
+  );
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    autoplay.current,
+  ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const onSelect = useCallback(() => {
@@ -51,7 +55,9 @@ export function Slideshow({
   if (!slides.length) return null;
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-gray-900 ${className}`}>
+    <div
+      className={`relative overflow-hidden rounded-2xl bg-gray-900 ${className}`}
+    >
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {slides.map((slide) => (
@@ -64,7 +70,9 @@ export function Slideshow({
               {(slide.title || slide.ctaLabel) && (
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-8 py-6 text-white">
                   {slide.title && (
-                    <h3 className="text-2xl font-bold mb-1 leading-tight">{slide.title}</h3>
+                    <h3 className="text-2xl font-bold mb-1 leading-tight">
+                      {slide.title}
+                    </h3>
                   )}
                   {slide.subtitle && (
                     <p className="text-sm opacity-85 mb-3">{slide.subtitle}</p>
@@ -90,7 +98,14 @@ export function Slideshow({
         aria-label="Previous slide"
         className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/85 hover:bg-white shadow-md transition-colors"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
           <polyline points="15 18 9 12 15 6" />
         </svg>
       </button>
@@ -101,7 +116,14 @@ export function Slideshow({
         aria-label="Next slide"
         className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/85 hover:bg-white shadow-md transition-colors"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
           <polyline points="9 18 15 12 9 6" />
         </svg>
       </button>
@@ -115,9 +137,7 @@ export function Slideshow({
               onClick={() => emblaApi?.scrollTo(i)}
               aria-label={`Go to slide ${i + 1}`}
               className={`w-2 h-2 rounded-full border-0 transition-all duration-200 ${
-                i === selectedIndex
-                  ? "bg-white scale-125"
-                  : "bg-white/50"
+                i === selectedIndex ? "bg-white scale-125" : "bg-white/50"
               }`}
             />
           ))}
