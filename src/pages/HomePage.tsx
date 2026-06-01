@@ -71,6 +71,7 @@ export function HomePage() {
       <section className="mb-16">
         <img
           src={
+            content["hero-image"]?.mediaUrl ||
             content["hero-image"]?.value ||
             defaults["hero-image"].value ||
             "https://placehold.net/800x600.png"
@@ -119,9 +120,15 @@ export function HomePage() {
         </h2>
         <VideoPlayer
           src={
-            content["demo-video"]?.value || defaults["demo-video"].value || ""
+            content["demo-video"]?.mediaUrl ||
+            content["demo-video"]?.value ||
+            defaults["demo-video"].value ||
+            ""
           }
-          caption="Replace this with your own video by updating the demo-video content field in Popcorn CMS."
+          caption={
+            content["demo-video"]?.caption ||
+            "Replace this with your own video by updating the demo-video content field in Popcorn CMS."
+          }
         />
       </section>
     </div>
