@@ -347,3 +347,135 @@ describe('CMSPage and CMSElement — splash page fields', () => {
         expect(content['splash-title']).toMatchObject({ type: 'heading', value: 'Welcome' });
     });
 });
+
+// ─── VideoPlayer / ContentBlock — caption and video element wiring ────────────
+
+describe('CMSElement — video and image caption wiring', () => {
+    it('CMSElement accepts a caption field', () => {
+        const el: CMSElement = {
+            id: 'el-video',
+            type: 'video',
+            ref: 'intro-video',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://storage.googleapis.com/bucket/intro.mp4',
+            caption: 'Watch our 2-minute overview',
+        };
+        expect(el.caption).toBe('Watch our 2-minute overview');
+        expect(el.mediaUrl).toBe('https://storage.googleapis.com/bucket/intro.mp4');
+    });
+
+    it('CMSElement caption is optional (undefined when absent)', () => {
+        const el: CMSElement = {
+            id: 'el-img',
+            type: 'image',
+            ref: 'hero-image',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://storage.googleapis.com/bucket/hero.jpg',
+        };
+        expect(el.caption).toBeUndefined();
+    });
+});
+
+describe('extractPageContent — video element with caption', () => {
+    it('returns mediaUrl and caption for a video element', () => {
+        const el: CMSElement = {
+            id: 'el-video',
+            type: 'video',
+            ref: 'intro-video',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://storage.googleapis.com/bucket/intro.mp4',
+            caption: 'Watch our 2-minute overview',
+        };
+        const page = makePage([el]);
+        const content = extractPageContent(page, 'hero');
+        expect(content['intro-video']).toMatchObject({
+            type: 'video',
+            value: '',
+            mediaUrl: 'https://storage.googleapis.com/bucket/intro.mp4',
+            caption: 'Watch our 2-minute overview',
+        });
+    });
+
+    it('returns mediaUrl and caption for an image element', () => {
+        const el: CMSElement = {
+            id: 'el-img',
+            type: 'image',
+            ref: 'team-photo',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://storage.googleapis.com/bucket/team.jpg',
+            caption: 'The founding team, 2024',
+        };
+        const page = makePage([el]);
+        const content = extractPageContent(page, 'hero');
+        expect(content['team-photo']).toMatchObject({
+            type: 'image',
+            mediaUrl: 'https://storage.googleapis.com/bucket/team.jpg',
+            caption: 'The founding team, 2024',
+        });
+    });
+
+    it('omits caption key when caption is absent', () => {
+        const el: CMSElement = {
+            id: 'el-img',
+            type: 'image',
+            ref: 'hero-image',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://storage.googleapis.com/bucket/hero.jpg',
+        };
+        const page = makePage([el]);
+        const content = extractPageContent(page, 'hero');
+        expect(content['hero-image']).not.toHaveProperty('caption');
+    });
+
+    it('preserves caption when multiple elements with different types coexist', () => {
+        const elements: CMSElement[] = [
+            { id: 'el-h', type: 'heading', ref: 'section-title', order: 0, content: 'About Us' },
+            {
+                id: 'el-v',
+                type: 'video',
+                ref: 'about-video',
+                order: 1,
+                content: '',
+                mediaUrl: 'https://storage.googleapis.com/bucket/about.mp4',
+                caption: 'Our story in 90 seconds',
+            },
+            { id: 'el-t', type: 'text', ref: 'section-body', order: 2, content: 'We build great things.' },
+        ];
+        const page = makePage(elements);
+        const content = extractPageContent(page, 'hero');
+        expect(content['section-title']).toMatchObject({ type: 'heading', value: 'About Us' });
+        expect(content['about-video']).toMatchObject({
+            type: 'video',
+            caption: 'Our story in 90 seconds',
+            mediaUrl: 'https://storage.googleapis.com/bucket/about.mp4',
+        });
+        expect(content['section-body']).toMatchObject({ type: 'text', value: 'We build great things.' });
+        expect(content['section-body']).not.toHaveProperty('caption');
+    });
+
+    it('ContentField type: video element flows through to VideoPlayer props without cast', () => {
+        // This test validates the TypeScript contract at runtime:
+        // ContentField.caption is a string, matching VideoPlayer's caption prop type.
+        const el: CMSElement = {
+            id: 'el-v',
+            type: 'video',
+            ref: 'promo',
+            order: 0,
+            content: '',
+            mediaUrl: 'https://cdn.example.com/promo.mp4',
+            caption: 'Special offer',
+        };
+        const page = makePage([el]);
+        const field = extractPageContent(page, 'hero')['promo'];
+        // Simulate what a page component does: pass to VideoPlayer
+        const src: string | undefined = field.mediaUrl;
+        const caption: string | undefined = field.caption;
+        expect(src).toBe('https://cdn.example.com/promo.mp4');
+        expect(caption).toBe('Special offer');
+    });
+});

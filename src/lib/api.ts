@@ -27,6 +27,8 @@ export interface CMSElement {
     order: number;
     content: string;
     mediaUrl?: string;
+    /** Caption shown beneath image or video elements */
+    caption?: string;
     /** Parsed JSON config stored on the element (e.g. { display, columns, overlayOpacity }) */
     config?: Record<string, any>;
     list?: {
@@ -65,6 +67,7 @@ export interface ContentField {
     type: string;
     value: string;
     mediaUrl?: string;
+    caption?: string;
 }
 
 export interface Page {
@@ -163,6 +166,7 @@ export const extractPageContent = (
                     type: element.type,
                     value: element.content,
                     ...(element.mediaUrl && { mediaUrl: element.mediaUrl }),
+                    ...(element.caption && { caption: element.caption }),
                 };
             }
         });
