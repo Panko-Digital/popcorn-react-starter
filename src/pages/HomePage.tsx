@@ -73,8 +73,7 @@ export function HomePage() {
           src={
             content["hero-image"]?.mediaUrl ||
             content["hero-image"]?.value ||
-            defaults["hero-image"].value ||
-            "https://placehold.net/800x600.png"
+            defaults["hero-image"].value
           }
           alt="Hero"
           className="w-full rounded-xl object-cover shadow-md"
@@ -122,8 +121,7 @@ export function HomePage() {
           src={
             content["demo-video"]?.mediaUrl ||
             content["demo-video"]?.value ||
-            defaults["demo-video"].value ||
-            ""
+            defaults["demo-video"].value
           }
           caption={
             content["demo-video"]?.caption ||
