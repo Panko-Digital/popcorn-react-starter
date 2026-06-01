@@ -1,5 +1,6 @@
 import { usePageData } from "../hooks/usePageData";
 import { safeList } from "../lib/utils";
+import { VideoPlayer } from "../components/VideoPlayer";
 import type { ContentField } from "../lib/api";
 
 /**
@@ -7,6 +8,8 @@ import type { ContentField } from "../lib/api";
  * - Content fields with fallback defaults
  * - List data with safeList mapping
  * - Loading states
+ * - Image rendering with placeholder
+ * - Video rendering with VideoPlayer
  */
 
 // Default content — renders immediately while CMS data loads
@@ -16,10 +19,19 @@ const defaults: Record<string, ContentField> = {
     type: "text",
     value: "Built with React and powered by Popcorn CMS",
   },
+  "hero-image": {
+    type: "image",
+    value: "https://placehold.net/800x600.png",
+  },
   "about-heading": { type: "text", value: "About Us" },
   "about-description": {
     type: "text",
     value: "We build great things for great people.",
+  },
+  "demo-video": {
+    type: "video",
+    value:
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
   },
 };
 
@@ -55,6 +67,20 @@ export function HomePage() {
         )}
       </section>
 
+      {/* Hero image */}
+      <section className="mb-16">
+        <img
+          src={
+            content["hero-image"]?.value ||
+            defaults["hero-image"].value ||
+            "https://placehold.net/800x600.png"
+          }
+          alt="Hero"
+          className="w-full rounded-xl object-cover shadow-md"
+          loading="lazy"
+        />
+      </section>
+
       {/* Features grid */}
       <section className="mb-16">
         <h2 className="text-2xl font-semibold text-gray-900 mb-8 text-center">
@@ -76,7 +102,7 @@ export function HomePage() {
       </section>
 
       {/* About */}
-      <section className="text-center">
+      <section className="text-center mb-16">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
           {content["about-heading"]?.value || defaults["about-heading"].value}
         </h2>
@@ -84,6 +110,19 @@ export function HomePage() {
           {content["about-description"]?.value ||
             defaults["about-description"].value}
         </p>
+      </section>
+
+      {/* Demo video */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+          Watch Our Story
+        </h2>
+        <VideoPlayer
+          src={
+            content["demo-video"]?.value || defaults["demo-video"].value || ""
+          }
+          caption="Replace this with your own video by updating the demo-video content field in Popcorn CMS."
+        />
       </section>
     </div>
   );
