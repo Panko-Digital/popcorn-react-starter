@@ -44,6 +44,7 @@
  */
 
 import { VideoPlayer } from "./VideoPlayer";
+import { EnhancedCollection } from "./EnhancedCollection";
 import { containsIframe } from "../lib/content-utils";
 import type { CMSBlock, CMSElement, CMSListItem } from "../lib/api";
 
@@ -144,6 +145,41 @@ function ElementList({ el }: { el: CMSElement }) {
   );
 }
 
+function ElementDynamicContent({ el }: { el: CMSElement }) {
+  const dct = el.dynamicContentType;
+  if (!dct || !dct.records || dct.records.length === 0) return null;
+
+  // Read display settings from element config or schema
+  const displaySettings =
+    el.config?.displaySettings || (dct as any).schema?.displaySettings;
+  const displayType = displaySettings?.displayType || "list";
+  const showSearch = displaySettings?.showSearch || false;
+  const showFilters = displaySettings?.showFilters || false;
+  const showMap = displaySettings?.showMap || false;
+
+  // Extract schema fields from the dynamic content type
+  const schema = (dct as any).schema;
+  const fields = schema?.fields || [];
+
+  // Records have their data nested under a `data` key from the API
+  const records = dct.records.map((r: any) => ({
+    id: r.id,
+    ...(r.data || r),
+  }));
+
+  return (
+    <EnhancedCollection
+      records={records}
+      fields={fields}
+      displayType={displayType}
+      showSearch={showSearch}
+      showFilters={showFilters}
+      showMap={showMap}
+      title={dct.name}
+    />
+  );
+}
+
 // ─── Single-element dispatcher ────────────────────────────────────────────────
 
 function BlockElement({ el }: { el: CMSElement }) {
@@ -162,6 +198,8 @@ function BlockElement({ el }: { el: CMSElement }) {
     case "list-reference":
     case "collection":
       return <ElementList el={el} />;
+    case "dynamic-content-reference":
+      return <ElementDynamicContent el={el} />;
     // video-background is a full-screen decoration — use VideoBackground instead
     case "video-background":
       return null;
