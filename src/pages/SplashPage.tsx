@@ -39,6 +39,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageData } from "../hooks/usePageData";
 import { VideoBackground } from "../components/VideoBackground";
+import { BackgroundSlideshow } from "../components/BackgroundSlideshow";
 
 interface SplashPageProps {
   /** CMS page slug to load (default: 'splash') */
@@ -193,6 +194,27 @@ export function SplashPage({
       {videoSrc && (
         <VideoBackground src={videoSrc} overlayOpacity={overlayOpacity} />
       )}
+
+      {/* Image slideshow background — used when no video is present */}
+      {!videoSrc &&
+        (() => {
+          // Collect all image elements from the background block or all blocks
+          const bgBlock = pageData.blocks.find(
+            (b) => b.ref === videoBlockRef || b.ref === "splash-background",
+          );
+          const imageEls = (
+            bgBlock?.elements || pageData.blocks.flatMap((b) => b.elements)
+          ).filter((el) => el.type === "image" && el.mediaUrl);
+          if (imageEls.length === 0) return null;
+          const config: Record<string, any> = (pageData as any).config || {};
+          return (
+            <BackgroundSlideshow
+              images={imageEls.map((el) => el.mediaUrl!)}
+              interval={config.slideshowInterval || 5000}
+              overlayOpacity={overlayOpacity}
+            />
+          );
+        })()}
 
       {/* Overlay content from CMS blocks (order 1+) */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 py-16 gap-4">
