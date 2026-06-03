@@ -45,6 +45,7 @@
 
 import { VideoPlayer } from "./VideoPlayer";
 import { EnhancedCollection } from "./EnhancedCollection";
+import { ImageGallery } from "./ImageGallery";
 import { containsIframe } from "../lib/content-utils";
 import type { CMSBlock, CMSElement, CMSListItem } from "../lib/api";
 
@@ -145,6 +146,43 @@ function ElementList({ el }: { el: CMSElement }) {
   );
 }
 
+function ElementGallery({ el }: { el: CMSElement }) {
+  // Media collection images from the API (config.mediaCollection or list items)
+  const mc = (el as any).mediaCollection || (el.config as any)?.mediaCollection;
+  const items = mc?.items || [];
+
+  // Fallback: if the element has a list with image items, use those
+  const listItems = el.list?.items ?? [];
+  const imageItems =
+    items.length > 0 ? items : listItems.filter((i: any) => i.mediaUrl);
+
+  if (imageItems.length === 0) {
+    return (
+      <div className="p-6 border border-gray-200 rounded-lg text-center text-gray-500">
+        <p className="text-sm">Gallery images will appear here once added.</p>
+      </div>
+    );
+  }
+
+  const galleryImages = imageItems.map((item: any, idx: number) => ({
+    id: item.id || item.mediaItemId || `img-${idx}`,
+    src: item.url || item.mediaUrl || "",
+    alt: item.altText || item.originalFilename || item.title || "",
+    wide: idx === 0 && imageItems.length > 3,
+  }));
+
+  return (
+    <div className="w-full">
+      {el.content && (
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+          {el.content}
+        </h3>
+      )}
+      <ImageGallery images={galleryImages} columns={4} />
+    </div>
+  );
+}
+
 function ElementDynamicContent({ el }: { el: CMSElement }) {
   const dct = el.dynamicContentType;
   if (!dct || !dct.records || dct.records.length === 0) return null;
@@ -198,6 +236,8 @@ function BlockElement({ el }: { el: CMSElement }) {
     case "list-reference":
     case "collection":
       return <ElementList el={el} />;
+    case "gallery":
+      return <ElementGallery el={el} />;
     case "dynamic-content-reference":
       return <ElementDynamicContent el={el} />;
     // video-background is a full-screen decoration — use VideoBackground instead
