@@ -5,8 +5,11 @@
  * All functions use the API key from environment variables.
  */
 
-const API_URL = import.meta.env.VITE_API_URL;
-const API_KEY = import.meta.env.VITE_API_KEY;
+// Runtime config injected by the published-site shell HTML.
+// Falls back to Vite env vars so local development still works.
+const _siteConfig = typeof window !== 'undefined' ? (window as any).POPCORN_SITE_CONFIG : null;
+const API_URL: string = _siteConfig?.apiUrl ?? import.meta.env.VITE_API_URL;
+const API_KEY: string = _siteConfig?.apiKey ?? import.meta.env.VITE_API_KEY;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
