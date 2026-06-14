@@ -1,9 +1,22 @@
 import { HomePage } from "./pages/HomePage";
 import { ContactForm } from "./components/ContactForm";
+import { SeoHead } from "./components/SeoHead";
 
 function App() {
+  // Site config from the published shell or env vars
+  const siteConfig =
+    typeof window !== "undefined" ? (window as any).POPCORN_SITE_CONFIG : null;
+  const siteName = siteConfig?.siteName || "My Site";
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Dynamic SEO meta tags — updates <head> after content loads */}
+      <SeoHead
+        title="Home"
+        siteName={siteName}
+        description="Welcome to our site"
+        pageSlug="home"
+      />
       {/* Navigation */}
       <header className="bg-white border-b border-gray-200">
         <nav className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
