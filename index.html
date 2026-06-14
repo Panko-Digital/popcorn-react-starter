@@ -3,7 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1"
+    />
+    <meta name="generator" content="Popcorn CMS" />
     <title>My Site — Powered by Popcorn CMS</title>
+
+    <!-- AI Agent Discovery: bots can find the machine-readable API via this tag -->
+    <!-- In production, the published shell HTML injects the real API URL here -->
+    <meta name="ai-content-api" content="" />
+
+    <!-- Open Graph (populated dynamically by SeoHead component after content loads) -->
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>
