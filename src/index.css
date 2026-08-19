@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/**
+ * Design token defaults.
+ *
+ * The site blueprint overrides these at runtime by setting the same custom
+ * properties inline on the site root (see src/lib/blueprint.ts). Declaring
+ * fallbacks here means the site renders sensibly before the blueprint loads,
+ * and stays readable if the API is unreachable.
+ */
+:root {
+  --site-primary: #4f46e5;
+  --site-secondary: #6b7280;
+  --site-background: #ffffff;
+  --site-text: #111827;
+  --site-muted: #f3f4f6;
+  --site-muted-foreground: #6b7280;
+  --site-card: #ffffff;
+  --site-border: #e5e7eb;
+
+  --site-heading-font: ui-sans-serif, system-ui, sans-serif;
+  --site-body-font: ui-sans-serif, system-ui, sans-serif;
+  --site-base-size: 16px;
+
+  --site-max-width: 1280px;
+}
+
+body {
+  background-color: var(--site-background);
+  color: var(--site-text);
+  font-family: var(--site-body-font);
+  font-size: var(--site-base-size);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--site-heading-font);
+}
+
+/* Visible focus for keyboard users, including over imagery. */
+:focus-visible {
+  outline: 3px solid var(--site-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
